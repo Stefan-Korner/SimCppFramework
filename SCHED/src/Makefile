@@ -15,3 +15,27 @@
 #******************************************************************************
 include ../../Makefile.include
 
+LIB_SCHED = ../lib/libSCHED.a
+INCLUDES = -I.
+
+all: ${LIB_SCHED}
+
+clean:
+	\rm -f ../lib/libSCHED.so ../lib/libSCHED.a *.o
+
+../lib/libSCHED.so: \
+	SCHED_Scheduler.o
+	${LIB_DYNAMIC} -olibSCHED.so \
+	SCHED_Scheduler.o
+	mv libSCHED.so ../lib
+
+../lib/libSCHED.a: \
+	SCHED_Scheduler.o
+	${LIB_STATIC} libSCHED.a \
+	SCHED_Scheduler.o
+	mv libSCHED.a ../lib
+
+SCHED_Scheduler.o: SCHED_Scheduler.cpp \
+	SCHED_Scheduler.hpp
+	${CPP} -oSCHED_Scheduler.o ${INCLUDES} \
+	SCHED_Scheduler.cpp
