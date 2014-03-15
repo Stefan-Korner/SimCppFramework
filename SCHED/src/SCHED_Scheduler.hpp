@@ -31,9 +31,9 @@ namespace SCHED
     // p_position defines the rank in the task list,
     //            allowed values are: 0...(MAX_TASKS - 1)
     // p_taskCycle and p_startDelay are in milli-seconds
-    Task(uint32_t p_position, uint32_t p_taskCycle, uint32_t p_startDelay);
+    Task(uint32_t p_position, uint32_t p_taskCycle, uint32_t p_startDelay = 0);
     virtual ~Task();
-    virtual bool exec(uint64_t p_simulationTime) = 0;
+    virtual void exec(uint64_t p_simulationTime) = 0;
 
   private:
     Task();
@@ -70,11 +70,17 @@ namespace SCHED
     // indicates if the scheduler is active
     virtual bool isActive() const;
 
+    // provide the simulation time (starts with 0)
+    virtual uint64_t getSimulationTime() const;
+
+    // provide the next schedule time
+    virtual uint64_t getNextScheduleTime() const;
+
     // allows to slow down the scheduling for debugging purpose,
     // the slow down factor should be >= 1
     virtual void setSlowDownFactor(uint32_t p_slowDownFactor);
 
-    // provided the slow down factor (default = 1)
+    // provide the slow down factor (default = 1)
     virtual uint32_t getSlowDownFactor() const;
 
   protected:

@@ -82,7 +82,8 @@ namespace SCHED
           nextTaskEntry.m_nextExecTime += nextTaskEntry.m_taskCycle;
         }
         // the next schedule time is the earliest next execute time
-        if(nextTaskEntry.m_nextExecTime < m_nextScheduleTime)
+        if((nextTaskEntry.m_task != NULL) &&
+           (nextTaskEntry.m_nextExecTime < m_nextScheduleTime))
         {
           m_nextScheduleTime = nextTaskEntry.m_nextExecTime;
         }
@@ -116,6 +117,13 @@ SCHED::Scheduler::~Scheduler()
 }
 
 //-----------------------------------------------------------------------------
+SCHED::Scheduler* SCHED::Scheduler::instance()
+//-----------------------------------------------------------------------------
+{
+  return s_instance;
+}
+
+//-----------------------------------------------------------------------------
 void SCHED::Scheduler::start()
 //-----------------------------------------------------------------------------
 {
@@ -142,6 +150,20 @@ bool SCHED::Scheduler::isActive() const
 //-----------------------------------------------------------------------------
 {
   return s_impl->m_active;
+}
+
+//-----------------------------------------------------------------------------
+uint64_t SCHED::Scheduler::getSimulationTime() const
+//-----------------------------------------------------------------------------
+{
+  return s_impl->m_simulationTime;
+}
+
+//-----------------------------------------------------------------------------
+uint64_t SCHED::Scheduler::getNextScheduleTime() const
+//-----------------------------------------------------------------------------
+{
+  return s_impl->m_nextScheduleTime;
 }
 
 //-----------------------------------------------------------------------------

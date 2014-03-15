@@ -37,6 +37,6 @@ tst_SCHED_Scheduler: ../bin/test_SCHED_Scheduler
 	mv test_SCHED_Scheduler ../bin
 
 test_SCHED_Scheduler.o: test_SCHED_Scheduler.cpp \
-	${LIB_UTIL}
+	${LIB_SCHED}
 	${CPP} -otest_SCHED_Scheduler.o ${INCLUDES} \
 	test_SCHED_Scheduler.cpp
