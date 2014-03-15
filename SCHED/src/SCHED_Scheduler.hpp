@@ -21,13 +21,19 @@
 
 namespace SCHED
 {
+  static const uint32_t MAX_TASKS = 16;
+
+  //---------------------------------------------------------------------------
   class Task
+  //---------------------------------------------------------------------------
   {
   public:
+    // p_position defines the rank in the task list,
+    //            allowed values are: 0...(MAX_TASKS - 1)
     // p_taskCycle and p_startDelay are in milli-seconds
-    Task(uint32_t p_taskCycle, uint32_t p_startDelay);
+    Task(uint32_t p_position, uint32_t p_taskCycle, uint32_t p_startDelay);
     virtual ~Task();
-    virtual bool exec() = 0;
+    virtual bool exec(uint64_t p_simulationTime) = 0;
 
   private:
     Task();
@@ -35,7 +41,11 @@ namespace SCHED
     const Task& operator=(const Task& p_task);
   };
 
+  class SchedulerImpl;
+
+  //---------------------------------------------------------------------------
   class Scheduler
+  //---------------------------------------------------------------------------
   {
   public:
     friend class Task;
@@ -54,19 +64,30 @@ namespace SCHED
     // deactivates the scheduler
     virtual void stop();
 
+    // deactivates the scheduler
+    virtual void singleStep();
+
     // indicates if the scheduler is active
     virtual bool isActive() const;
 
+    // allows to slow down the scheduling for debugging purpose,
+    // the slow down factor should be >= 1
+    virtual void setSlowDownFactor(uint32_t p_slowDownFactor);
+
+    // provided the slow down factor (default = 1)
+    virtual uint32_t getSlowDownFactor() const;
+
   protected:
-    // a Task registers itself automatically with this method
+    // a task registers itself automatically with this method
     virtual void registerTask(Task* p_task,
+                              uint32_t p_position,
                               uint32_t p_taskCycle,
                               uint32_t p_startDelay);
 
-    // removes a Task from the schedule plan
+    // removes a task from the schedule plan,
+    // the task is not owned (memory managed) by the scheduler
+    // and must be deleted after unregistration by the caller
     virtual void unregisterTask(Task* p_task);
-
-    bool m_active;
 
   private:
     Scheduler(const Scheduler& p_scheduler);
