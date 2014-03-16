@@ -24,16 +24,25 @@ clean:
 	\rm -f ../lib/libSCHED.so ../lib/libSCHED.a *.o
 
 ../lib/libSCHED.so: \
+	SCHED_Memory.o \
 	SCHED_Scheduler.o
 	${LIB_DYNAMIC} -olibSCHED.so \
+	SCHED_Memory.o \
 	SCHED_Scheduler.o
 	mv libSCHED.so ../lib
 
 ../lib/libSCHED.a: \
+	SCHED_Memory.o \
 	SCHED_Scheduler.o
 	${LIB_STATIC} libSCHED.a \
+	SCHED_Memory.o \
 	SCHED_Scheduler.o
 	mv libSCHED.a ../lib
+
+SCHED_Memory.o: SCHED_Memory.cpp \
+	SCHED_Memory.hpp
+	${CPP} -oSCHED_Memory.o ${INCLUDES} \
+	SCHED_Memory.cpp
 
 SCHED_Scheduler.o: SCHED_Scheduler.cpp \
 	SCHED_Scheduler.hpp
