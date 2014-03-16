@@ -30,7 +30,7 @@ namespace SCHED
   public:
     // p_position defines the rank in the task list,
     //            allowed values are: 0...(MAX_TASKS - 1)
-    // p_taskCycle and p_startDelay are in milli-seconds
+    // p_taskCycle and p_startDelay are in micro-seconds
     Task(uint32_t p_position, uint32_t p_taskCycle, uint32_t p_startDelay = 0);
     virtual ~Task();
     virtual void exec(uint64_t p_simulationTime) = 0;

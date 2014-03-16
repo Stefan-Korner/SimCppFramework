@@ -15,6 +15,10 @@
 //*****************************************************************************
 #include "SCHED_Scheduler.hpp"
 
+#include <pthread.h>
+#include <sys/select.h>
+#include <sys/time.h>
+
 // global variables
 SCHED::Scheduler* SCHED::Scheduler::s_instance = NULL;
 
@@ -45,7 +49,9 @@ SCHED::Task::~Task()
 
 namespace SCHED
 {
+  //---------------------------------------------------------------------------
   struct TaskEntry
+  //---------------------------------------------------------------------------
   {
     Task* m_task;
     uint32_t m_taskCycle;
@@ -55,10 +61,13 @@ namespace SCHED
       m_task(NULL), m_taskCycle(0), m_startDelay(0), m_nextExecTime(0) {}
   };
 
+  //---------------------------------------------------------------------------
   class SchedulerImpl
+  //---------------------------------------------------------------------------
   {
   public:
     bool m_active;
+    pthread_t m_threadID;
     uint64_t m_simulationTime;
     uint64_t m_nextScheduleTime;
     uint32_t m_slowDownFactor;
@@ -95,6 +104,55 @@ namespace SCHED
 // singleton implementation
 static SCHED::SchedulerImpl* s_impl = NULL;
 
+//-----------------------------------------------------------------------------
+static uint64_t getTimeOfDay()
+//-----------------------------------------------------------------------------
+{
+  struct timeval tv;
+  struct timezone tz;
+  gettimeofday(&tv, &tz);
+  uint64_t retVal = tv.tv_sec;
+  retVal *= 1000000;
+  retVal += tv.tv_usec;
+  return retVal;
+}
+
+//-----------------------------------------------------------------------------
+static void sleepRel(uint64_t p_sleepTime)
+//-----------------------------------------------------------------------------
+{
+  struct timeval sleepTime;
+  sleepTime.tv_sec = (uint32_t) p_sleepTime / 1000000;
+  sleepTime.tv_usec = (uint32_t) p_sleepTime % 1000000;
+  select(FD_SETSIZE, NULL, NULL, NULL, &sleepTime);
+}
+
+//-----------------------------------------------------------------------------
+static void* schedule_thread(void* p_arg)
+//-----------------------------------------------------------------------------
+{
+  // schedule loop
+  uint64_t startTime = getTimeOfDay() - s_impl->m_simulationTime;
+  while(s_impl->m_active)
+  {
+    s_impl->schedule();
+    uint64_t simulationTime = getTimeOfDay() - startTime;
+    if(simulationTime < s_impl->m_nextScheduleTime)
+    {
+      // we have time to sleep
+      uint64_t sleepTime = s_impl->m_nextScheduleTime - simulationTime;
+      sleepRel(sleepTime);
+    }
+    else
+    {
+      // execution of threads took too long
+      // TODO: error handling
+    }
+    s_impl->m_simulationTime = getTimeOfDay() - startTime;
+  }
+  return NULL;
+}
+
 ///////////////
 // Scheduler //
 ///////////////
@@ -128,6 +186,7 @@ void SCHED::Scheduler::start()
 //-----------------------------------------------------------------------------
 {
   s_impl->m_active = true;
+  pthread_create(&(s_impl->m_threadID), NULL, &schedule_thread, NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -135,6 +194,7 @@ void SCHED::Scheduler::stop()
 //-----------------------------------------------------------------------------
 {
   s_impl->m_active = false;
+  pthread_join(s_impl->m_threadID, NULL);
 }
 
 //-----------------------------------------------------------------------------

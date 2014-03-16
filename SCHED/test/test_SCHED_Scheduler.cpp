@@ -16,6 +16,7 @@
 #include "SCHED_Scheduler.hpp"
 
 #include <iostream>
+#include <unistd.h>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ class Task0: public SCHED::Task
 //-----------------------------------------------------------------------------
 {
 public:
-  Task0(): SCHED::Task(0, 100) {}
+  Task0(): SCHED::Task(0, 1000000) {}
   virtual ~Task0() {}
   virtual void exec(uint64_t p_simulationTime)
   {
@@ -37,7 +38,7 @@ class Task1: public SCHED::Task
 //-----------------------------------------------------------------------------
 {
 public:
-  Task1(): SCHED::Task(1, 200) {}
+  Task1(): SCHED::Task(1, 2000000) {}
   virtual ~Task1() {}
   virtual void exec(uint64_t p_simulationTime)
   {
@@ -50,7 +51,7 @@ class Task2: public SCHED::Task
 //-----------------------------------------------------------------------------
 {
 public:
-  Task2(): SCHED::Task(2, 200, 100) {}
+  Task2(): SCHED::Task(2, 2000000, 1000000) {}
   virtual ~Task2() {}
   virtual void exec(uint64_t p_simulationTime)
   {
@@ -63,7 +64,7 @@ class Task3: public SCHED::Task
 //-----------------------------------------------------------------------------
 {
 public:
-  Task3(): SCHED::Task(3, 50) {}
+  Task3(): SCHED::Task(3, 500000) {}
   virtual ~Task3() {}
   virtual void exec(uint64_t p_simulationTime)
   {
@@ -76,7 +77,7 @@ class Task4: public SCHED::Task
 //-----------------------------------------------------------------------------
 {
 public:
-  Task4(): SCHED::Task(4, 100) {}
+  Task4(): SCHED::Task(4, 1000000) {}
   virtual ~Task4() {}
   virtual void exec(uint64_t p_simulationTime)
   {
@@ -104,5 +105,10 @@ int main()
   SCHED::Scheduler::instance()->singleStep();
   cout << "---singleStep---" << endl;
   SCHED::Scheduler::instance()->singleStep();
+  cout << "---start---" << endl;
+  SCHED::Scheduler::instance()->start();
+  sleep(60);
+  cout << "---stop---" << endl;
+  SCHED::Scheduler::instance()->stop();
   return 0;
 }
