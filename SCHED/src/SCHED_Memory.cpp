@@ -65,3 +65,10 @@ uint32_t SCHED::Memory::getVariable(size_t p_variable) const
   }
   return 0;
 }
+
+//-----------------------------------------------------------------------------
+size_t SCHED::Memory::getNumVariables() const
+//-----------------------------------------------------------------------------
+{
+  return m_numVariables;
+}

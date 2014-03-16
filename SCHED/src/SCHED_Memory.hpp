@@ -19,6 +19,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// variable access - convenience macros
+#define SET_VAR(VARIABLE,VALUE) \
+  SCHED::Memory::instance()->setVariable(VARIABLE,VALUE)
+#define GET_VAR(VARIABLE) \
+  SCHED::Memory::instance()->getVariable(VARIABLE)
+#define NUM_VARS \
+  SCHED::Memory::instance()->getNumVariables()
+
 namespace SCHED
 {
   class Memory
@@ -37,6 +45,9 @@ namespace SCHED
 
     // memory read access
     virtual uint32_t getVariable(size_t p_variable) const;
+
+    // number of variables
+    virtual size_t getNumVariables() const;
 
   protected:
     uint32_t* m_variables;

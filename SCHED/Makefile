@@ -22,5 +22,8 @@ clean:
 	cd src; make clean
 	cd test; make clean
 
+tst_SCHED_Memory:
+	cd test; make tst_SCHED_Memory
+
 tst_SCHED_Scheduler:
 	cd test; make tst_SCHED_Scheduler

@@ -21,20 +21,36 @@ LIBS = -L../lib -lSCHED \
 LIB_SCHED = ../lib/libSCHED.a
 INCLUDES = -I. -I../src
 
-all:	../bin/test_SCHED_Scheduler
+all:	../bin/test_SCHED_Memory \
+	../bin/test_SCHED_Scheduler
 
 clean:
+	\rm -f ../bin/test_SCHED_Memory
 	\rm -f ../bin/test_SCHED_Scheduler
 	\rm -f *.o
 
+tst_SCHED_Memory: ../bin/test_SCHED_Memory
+	cd ../bin; ./test_SCHED_Memory
+
 tst_SCHED_Scheduler: ../bin/test_SCHED_Scheduler
 	cd ../bin; ./test_SCHED_Scheduler
+
+../bin/test_SCHED_Memory: test_SCHED_Memory.o
+	${LINK} -otest_SCHED_Memory \
+	test_SCHED_Memory.o \
+	${LIBS}
+	mv test_SCHED_Memory ../bin
 
 ../bin/test_SCHED_Scheduler: test_SCHED_Scheduler.o
 	${LINK} -otest_SCHED_Scheduler \
 	test_SCHED_Scheduler.o \
 	${LIBS}
 	mv test_SCHED_Scheduler ../bin
+
+test_SCHED_Memory.o: test_SCHED_Memory.cpp \
+	${LIB_SCHED}
+	${CPP} -otest_SCHED_Memory.o ${INCLUDES} \
+	test_SCHED_Memory.cpp
 
 test_SCHED_Scheduler.o: test_SCHED_Scheduler.cpp \
 	${LIB_SCHED}
