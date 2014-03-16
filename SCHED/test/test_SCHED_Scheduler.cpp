@@ -89,7 +89,7 @@ public:
 int main()
 //-----------------------------------------------------------------------------
 {
-  SCHED::Scheduler scheduler;
+  SCHED::Scheduler scheduler(5);
   new Task0;
   new Task1;
   new Task2;

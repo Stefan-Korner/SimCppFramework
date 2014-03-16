@@ -21,8 +21,6 @@
 
 namespace SCHED
 {
-  static const uint32_t MAX_TASKS = 16;
-
   //---------------------------------------------------------------------------
   class Task
   //---------------------------------------------------------------------------
@@ -52,11 +50,14 @@ namespace SCHED
 
     // the scheduler (or a derived class) shall
     // be created and destroyed in main()
-    Scheduler();
+    Scheduler(uint32_t p_maxTasks);
     virtual ~Scheduler();
 
     // the scheduler is a singleton
     static Scheduler* instance();
+
+    // maximun number of tasks
+    virtual uint32_t getMaxTasks() const;
 
     // activates the scheduler as background thread
     virtual void start();
@@ -96,6 +97,7 @@ namespace SCHED
     virtual void unregisterTask(Task* p_task);
 
   private:
+    Scheduler();
     Scheduler(const Scheduler& p_scheduler);
     const Scheduler& operator=(const Scheduler& p_task);
 

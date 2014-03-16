@@ -66,21 +66,30 @@ namespace SCHED
   //---------------------------------------------------------------------------
   {
   public:
+    uint32_t m_maxTasks;
     bool m_active;
     pthread_t m_threadID;
     uint64_t m_simulationTime;
     uint64_t m_nextScheduleTime;
     uint32_t m_slowDownFactor;
-    TaskEntry m_tasks[MAX_TASKS];
-    SchedulerImpl(): m_active(false),
-                     m_simulationTime(0),
-                     m_nextScheduleTime(0xFFFFFFFFFFFFFFFF),
-                     m_slowDownFactor(1) {}
-    ~SchedulerImpl() {}
+    TaskEntry* m_tasks;
+    SchedulerImpl(uint32_t p_maxTasks): m_maxTasks(p_maxTasks),
+                                        m_active(false),
+                                        m_simulationTime(0),
+                                        m_nextScheduleTime(0xFFFFFFFFFFFFFFFF),
+                                        m_slowDownFactor(1),
+                                        m_tasks(NULL)
+    {
+      m_tasks = new TaskEntry[p_maxTasks];
+    }
+    ~SchedulerImpl()
+    {
+      delete[] m_tasks;
+    }
     void schedule()
     {
       m_nextScheduleTime += 0xFFFFFFFF;
-      for(uint32_t i = 0; i < MAX_TASKS; i++)
+      for(uint32_t i = 0; i < m_maxTasks; i++)
       {
         TaskEntry& nextTaskEntry = m_tasks[i];
         // execute the next task on demand
@@ -158,11 +167,11 @@ static void* schedule_thread(void* p_arg)
 ///////////////
 
 //-----------------------------------------------------------------------------
-SCHED::Scheduler::Scheduler()
+SCHED::Scheduler::Scheduler(uint32_t p_maxTasks)
 //-----------------------------------------------------------------------------
 {
   s_instance = this;
-  s_impl = new SCHED::SchedulerImpl;
+  s_impl = new SCHED::SchedulerImpl(p_maxTasks);
 }
 
 //-----------------------------------------------------------------------------
@@ -179,6 +188,13 @@ SCHED::Scheduler* SCHED::Scheduler::instance()
 //-----------------------------------------------------------------------------
 {
   return s_instance;
+}
+
+//-----------------------------------------------------------------------------
+uint32_t SCHED::Scheduler::getMaxTasks() const
+//-----------------------------------------------------------------------------
+{
+  return s_impl->m_maxTasks;
 }
 
 //-----------------------------------------------------------------------------
@@ -254,7 +270,7 @@ void SCHED::Scheduler::registerTask(SCHED::Task* p_task,
                                     uint32_t p_startDelay)
 //-----------------------------------------------------------------------------
 {
-  if(p_position < MAX_TASKS)
+  if(p_position < s_impl->m_maxTasks)
   {
     TaskEntry& taskEntry = s_impl->m_tasks[p_position];
     taskEntry.m_task = p_task;
@@ -273,7 +289,7 @@ void SCHED::Scheduler::registerTask(SCHED::Task* p_task,
 void SCHED::Scheduler::unregisterTask(SCHED::Task* p_task)
 //-----------------------------------------------------------------------------
 {
-  for(uint32_t i = 0; i < MAX_TASKS; i++)
+  for(uint32_t i = 0; i < s_impl->m_maxTasks; i++)
   {
     TaskEntry& taskEntry = s_impl->m_tasks[i];
     if(taskEntry.m_task != NULL)
