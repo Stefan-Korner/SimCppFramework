@@ -55,7 +55,7 @@ namespace SCHED
 
   private:
     Memory();
-    Memory(const Memory& p_scheduler);
+    Memory(const Memory& p_memory);
     const Memory& operator=(const Memory& p_task);
 
     static Memory* s_instance;
