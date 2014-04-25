@@ -33,3 +33,15 @@ target_link_libraries(test_SCHED_Scheduler
   SCHED
   pthread)
 
+if(SimCppFramework_build_tests)
+  include_directories(../3rdparty/gtest/include)
+
+  add_executable(test_SCHED_gtest_example
+    test/test_SCHED_gtest_example.cpp)
+  target_link_libraries(test_SCHED_gtest_example
+    gtest
+    gtest_main)
+  add_test(NAME test_SCHED_gtest_example
+    COMMAND test_SCHED_gtest_example)
+endif()
+

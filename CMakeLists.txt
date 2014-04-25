@@ -22,8 +22,15 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
   message(FATAL_ERROR "The source directory is the same as binary directory.")
 endif()
 
+option(SimCppFramework_build_tests "Build all of SimCppFramework's tests." ON)
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
+
+if(SimCppFramework_build_tests)
+  enable_testing()
+  add_subdirectory(3rdparty/gtest)
+endif()
 
 add_subdirectory(SCHED)
 
