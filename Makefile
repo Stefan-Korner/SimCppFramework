@@ -15,7 +15,9 @@
 #******************************************************************************
 
 all:
+	cd 3rdparty/gtest; make
 	cd SCHED; make
 
 clean:
+	cd 3rdparty/gtest; make clean
 	cd SCHED; make clean

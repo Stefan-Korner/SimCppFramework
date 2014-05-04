@@ -39,7 +39,6 @@ if(SimCppFramework_build_tests)
   add_executable(test_SCHED_gtest_example
     test/test_SCHED_gtest_example.cpp)
   target_link_libraries(test_SCHED_gtest_example
-    gtest
     gtest_main)
   add_test(NAME test_SCHED_gtest_example
     COMMAND test_SCHED_gtest_example)
